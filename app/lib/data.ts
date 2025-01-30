@@ -86,7 +86,7 @@ export async function fetchCardData() {
 const ITEMS_PER_PAGE = 6;
 export async function fetchFilteredInvoices(
   query: string,
-  currentPage: number,
+  currentPage: number
 ) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
@@ -96,7 +96,8 @@ export async function fetchFilteredInvoices(
         invoices.id,
         invoices.amount,
         invoices.date,
-        invoices.status,
+        get_invoice_status(status, due_date) AS status,
+        invoices.due_date,
         customers.name,
         customers.email,
         customers.image_url
@@ -107,7 +108,7 @@ export async function fetchFilteredInvoices(
         customers.email ILIKE ${`%${query}%`} OR
         invoices.amount::text ILIKE ${`%${query}%`} OR
         invoices.date::text ILIKE ${`%${query}%`} OR
-        invoices.status ILIKE ${`%${query}%`}
+        get_invoice_status(status, due_date) ILIKE ${`%${query}%`}
       ORDER BY invoices.date DESC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `;
@@ -129,7 +130,7 @@ export async function fetchInvoicesPages(query: string) {
       customers.email ILIKE ${`%${query}%`} OR
       invoices.amount::text ILIKE ${`%${query}%`} OR
       invoices.date::text ILIKE ${`%${query}%`} OR
-      invoices.status ILIKE ${`%${query}%`}
+     get_invoice_status(status, due_date) ILIKE ${`%${query}%`}
   `;
 
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
@@ -147,7 +148,8 @@ export async function fetchInvoiceById(id: string) {
         invoices.id,
         invoices.customer_id,
         invoices.amount,
-        invoices.status
+        get_invoice_status(status, due_date) AS status,
+        due_date
       FROM invoices
       WHERE invoices.id = ${id};
     `;
