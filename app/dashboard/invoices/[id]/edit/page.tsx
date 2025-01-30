@@ -36,7 +36,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
       <Form invoice={invoice} customers={customers} />
       <div className="mt-2 flex flex-col gap-2">
         <p className="text-base">Status Logs</p>
-        <InvoiceStatusLogs logs={statusLogs} />
+        <InvoiceStatusLogs invoiceId={invoice.id} logs={statusLogs} />
       </div>
     </main>
   );

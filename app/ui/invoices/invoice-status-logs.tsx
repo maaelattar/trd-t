@@ -1,13 +1,18 @@
 import { InvoiceItemStatus, InvoiceStatusLog } from '@/app/lib/definitions';
-import { formatDateToLocal, formatTimestampToLocal } from '@/app/lib/utils';
+import { formatTimestampToLocal } from '@/app/lib/utils';
 import { invoiceStatusMap } from './utils';
 import StatusPill from './status-pill';
+import InvoiceStatusLogRestore from './invoice-status-log-restore';
 
 export default function InvoiceStatusLogs({
+  invoiceId,
   logs,
 }: {
+  invoiceId: string;
   logs: InvoiceStatusLog[];
 }) {
+  const latestLog = logs[0];
+  const canRestore = latestLog && latestLog.log_status === 'active';
   const renderStatusPills = (
     oldStatus: InvoiceItemStatus,
     newStatus: InvoiceItemStatus
@@ -74,6 +79,15 @@ export default function InvoiceStatusLogs({
                       log.invoice_new_status
                     )}
                   </td>
+                  {canRestore && log === latestLog && (
+                    <td className="whitespace-nowrap px-3 py-3">
+                      <InvoiceStatusLogRestore
+                        invoiceId={invoiceId}
+                        oldStatus={log.invoice_old_status}
+                        newStatus={log.invoice_new_status}
+                      />
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

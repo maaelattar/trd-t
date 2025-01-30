@@ -1,6 +1,9 @@
+'use client';
+
 import { InvoiceItemStatus } from '@/app/lib/definitions';
 import { getInvoiceStatuses, invoiceStatusMap } from './utils';
 import StatusPill from './status-pill';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 export default function InvoiceFormStatusInputs({
   dueDate,
@@ -11,19 +14,31 @@ export default function InvoiceFormStatusInputs({
   status?: InvoiceItemStatus;
   statusErrors?: string[];
 }) {
+  const [currentStatus, setCurrentStatus] = useState<InvoiceItemStatus>();
+
+  useEffect(() => {
+    if (status) {
+      setCurrentStatus(status);
+    }
+  }, [status]);
+
+  const onStatusChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setCurrentStatus(e.target.value as InvoiceItemStatus);
+  };
+
   const statuses = getInvoiceStatuses(dueDate);
 
   const renderStatuses = () => {
     return statuses.map((statusItem) => {
       const mappedStatus = invoiceStatusMap[statusItem];
-      const Icon = mappedStatus.icon;
       return (
         <StatusPill
           key={mappedStatus.label}
           label={mappedStatus.label}
           value={mappedStatus.value}
           badgeStyles={mappedStatus.badgeStyles}
-          currentInputStatus={status}
+          currentInputStatus={currentStatus}
+          onChange={onStatusChange}
           Icon={mappedStatus.icon}
         />
       );

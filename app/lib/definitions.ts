@@ -92,7 +92,7 @@ export type InvoiceForm = {
   due_date: string;
 };
 
-export type InvoiceStatusLogStatus = 'active';
+export type InvoiceStatusLogStatus = 'active' | 'restored';
 
 export type InvoiceStatusLog = {
   created_at: string;

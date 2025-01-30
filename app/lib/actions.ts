@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { auth, signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import { InvoiceStatusLogStatus } from './definitions';
 
 const FormSchema = z.object({
   id: z.string(),
@@ -152,7 +153,7 @@ export async function updateInvoiceStatusAndLogs(
   invoiceId: string,
   oldStatus: string,
   newStatus: string,
-  logStatus = 'active'
+  logStatus: InvoiceStatusLogStatus = 'active'
 ) {
   try {
     const session = await auth();
@@ -165,6 +166,8 @@ export async function updateInvoiceStatusAndLogs(
     await sql`INSERT INTO invoice_status_logs (invoice_id, user_email, invoice_old_status, invoice_new_status, log_status) values(${invoiceId}, ${userEmail}, ${oldStatus}, ${newStatus}, ${logStatus})`;
     revalidatePath('/dashboard/invoices');
   } catch (error) {
+    console.log('updateInvoiceStatusAndLogs error', error);
+
     return { message: 'Database Error: Failed to Update Invoice Status.' };
   }
 }
