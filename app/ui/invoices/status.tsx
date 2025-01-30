@@ -6,7 +6,7 @@ import { getInvoiceStatuses, invoiceStatusMap } from './utils';
 import { InvoiceItemStatus } from '@/app/lib/definitions';
 import { useState, useTransition } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
-import { updateInvoiceStatus } from '@/app/lib/actions';
+import { updateInvoiceStatusAndLogs } from '@/app/lib/actions';
 
 export default function InvoiceStatus({
   invoiceId,
@@ -28,7 +28,7 @@ export default function InvoiceStatus({
 
   const handleStatusChange = (invoiceId: string, newStatus: string) => {
     startTransition(() => {
-      updateInvoiceStatus(invoiceId, newStatus);
+      updateInvoiceStatusAndLogs(invoiceId, currentStatus.value, newStatus);
       setIsOpen(false);
     });
   };

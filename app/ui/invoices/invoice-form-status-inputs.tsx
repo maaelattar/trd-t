@@ -1,6 +1,6 @@
 import { InvoiceItemStatus } from '@/app/lib/definitions';
 import { getInvoiceStatuses, invoiceStatusMap } from './utils';
-import clsx from 'clsx';
+import StatusPill from './status-pill';
 
 export default function InvoiceFormStatusInputs({
   dueDate,
@@ -18,27 +18,14 @@ export default function InvoiceFormStatusInputs({
       const mappedStatus = invoiceStatusMap[statusItem];
       const Icon = mappedStatus.icon;
       return (
-        <div className="flex items-center" key={mappedStatus.label}>
-          <input
-            id={mappedStatus.value}
-            name="status"
-            type="radio"
-            value={mappedStatus.value}
-            defaultChecked={status === mappedStatus.value}
-            className={clsx(
-              'h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2'
-            )}
-          />
-          <label
-            htmlFor={mappedStatus.value}
-            className={clsx(
-              'ml-2 flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium',
-              mappedStatus.badgeStyles
-            )}
-          >
-            {mappedStatus.label} <Icon className="h-4 w-4" />
-          </label>
-        </div>
+        <StatusPill
+          key={mappedStatus.label}
+          label={mappedStatus.label}
+          value={mappedStatus.value}
+          badgeStyles={mappedStatus.badgeStyles}
+          currentInputStatus={status}
+          Icon={mappedStatus.icon}
+        />
       );
     });
   };

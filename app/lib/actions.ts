@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { signIn } from '@/auth';
+import { auth, signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 
 const FormSchema = z.object({
@@ -74,6 +74,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
 
 export async function updateInvoice(
   id: string,
+  oldStatus: string,
   prevState: State,
   formData: FormData
 ) {
@@ -90,13 +91,17 @@ export async function updateInvoice(
     };
   }
 
-  const { customerId, amount, status } = validatedFields.data;
+  const { customerId, amount, status: newStatus } = validatedFields.data;
+
+  if (oldStatus !== newStatus) {
+    updateInvoiceStatusAndLogs(id, oldStatus, newStatus);
+  }
   const amountInCents = amount * 100;
 
   try {
     await sql`
       UPDATE invoices
-      SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
+      SET customer_id = ${customerId}, amount = ${amountInCents}
       WHERE id = ${id}
     `;
   } catch (error) {
@@ -137,6 +142,27 @@ export async function updateInvoiceStatus(
 ) {
   try {
     await sql`UPDATE invoices SET status = ${newStatus} WHERE id = ${invoiceId}`;
+    revalidatePath('/dashboard/invoices');
+  } catch (error) {
+    return { message: 'Database Error: Failed to Update Invoice Status.' };
+  }
+}
+
+export async function updateInvoiceStatusAndLogs(
+  invoiceId: string,
+  oldStatus: string,
+  newStatus: string,
+  logStatus = 'active'
+) {
+  try {
+    const session = await auth();
+
+    if (!session?.user) return null;
+
+    const userEmail = session?.user?.email;
+    await updateInvoiceStatus(invoiceId, newStatus);
+
+    await sql`INSERT INTO invoice_status_logs (invoice_id, user_email, invoice_old_status, invoice_new_status, log_status) values(${invoiceId}, ${userEmail}, ${oldStatus}, ${newStatus}, ${logStatus})`;
     revalidatePath('/dashboard/invoices');
   } catch (error) {
     return { message: 'Database Error: Failed to Update Invoice Status.' };

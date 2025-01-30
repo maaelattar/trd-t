@@ -4,6 +4,7 @@ import {
   CustomersTableType,
   InvoiceForm,
   InvoicesTable,
+  InvoiceStatusLog,
   LatestInvoiceRaw,
   Revenue,
 } from './definitions';
@@ -165,6 +166,19 @@ export async function fetchInvoiceById(id: string) {
     return invoice[0];
   } catch (error) {
     console.error('Database Error:', error);
+    throw new Error('Failed to fetch invoice.');
+  }
+}
+
+export async function fetchInvoiceByIdWithLogs(id: string) {
+  try {
+    const invoice = await fetchInvoiceById(id);
+
+    const statusLogs =
+      await sql<InvoiceStatusLog>`SELECT * FROM invoice_status_logs WHERE invoice_id = ${id} ORDER BY created_at DESC`;
+
+    return { invoice, statusLogs: statusLogs.rows };
+  } catch (error) {
     throw new Error('Failed to fetch invoice.');
   }
 }

@@ -91,3 +91,15 @@ export type InvoiceForm = {
   status: InvoiceItemStatus;
   due_date: string;
 };
+
+export type InvoiceStatusLogStatus = 'active';
+
+export type InvoiceStatusLog = {
+  created_at: string;
+  id: string;
+  invoice_id: string;
+  invoice_new_status: InvoiceItemStatus;
+  invoice_old_status: InvoiceItemStatus;
+  log_status: InvoiceStatusLogStatus;
+  user_email: string;
+};

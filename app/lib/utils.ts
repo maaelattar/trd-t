@@ -9,7 +9,7 @@ export const formatCurrency = (amount: number) => {
 
 export const formatDateToLocal = (
   dateStr: string,
-  locale: string = 'en-US',
+  locale: string = 'en-US'
 ) => {
   const date = new Date(dateStr);
   const options: Intl.DateTimeFormatOptions = {
@@ -19,6 +19,25 @@ export const formatDateToLocal = (
   };
   const formatter = new Intl.DateTimeFormat(locale, options);
   return formatter.format(date);
+};
+
+export const formatTimestampToLocal = (
+  dateStr: string,
+  locale: string = 'en-US'
+) => {
+  const options: any = {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: false,
+    timeZone: 'America/Los_Angeles',
+  };
+  const date = new Date(dateStr);
+
+  return new Intl.DateTimeFormat(locale, options).format(date);
 };
 
 export const generateYAxis = (revenue: Revenue[]) => {
