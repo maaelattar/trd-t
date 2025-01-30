@@ -3,6 +3,7 @@ import {
   CheckIcon,
   ClockIcon,
   ExclamationCircleIcon,
+  XCircleIcon,
 } from '@heroicons/react/24/outline';
 
 export const invoiceStatusMap = {
@@ -27,6 +28,13 @@ export const invoiceStatusMap = {
     badgeStyles: 'bg-amber-100 text-amber-600',
     iconColor: 'text-amber-600',
   },
+  canceled: {
+    value: 'canceled',
+    label: 'Canceled',
+    icon: XCircleIcon,
+    badgeStyles: 'bg-red-100 text-red-600',
+    iconColor: 'text-red-600',
+  },
 };
 
 export const getIsInvoiceStatusPending = (dueDate?: string) => {
@@ -41,7 +49,7 @@ export const getInvoiceStatuses = (
   dueDate?: string,
   status?: InvoiceItemStatus
 ): InvoiceItemStatus[] => {
-  return [getPendingOrOverdueStatus(dueDate), 'paid'].filter(
+  return [getPendingOrOverdueStatus(dueDate), 'canceled', 'paid'].filter(
     (item) => item !== status
   ) as InvoiceItemStatus[];
 };
