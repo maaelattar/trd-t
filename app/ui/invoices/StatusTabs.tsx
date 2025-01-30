@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 const tabs = [
   {
     label: 'All',
-    statusQuery: undefined,
+    statusQuery: null,
   },
   {
     label: 'Paid',
